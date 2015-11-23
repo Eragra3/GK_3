@@ -1,0 +1,92 @@
+<?import javafx.scene.control.*?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<BorderPane fx:id="borderPane" fx:controller="presentation.Controllers.Controller" xmlns:fx="http://javafx.com/fxml">
+    <top>
+        <VBox>
+            <MenuBar fx:id="menuBar">
+                <menus>
+                    <Menu text="File">
+                        <items>
+                            <MenuItem text="Load raster image" onAction="#loadImageR"/>
+                            <MenuItem text="Generate vector image" onAction="#loadImageV"/>
+                        </items>
+                    </Menu>
+                    <Menu text="Edit">
+                        <MenuItem text="Center" onAction="#centerR"/>
+                        <MenuItem text="Reset" onAction="#resetR"/>
+                        <SeparatorMenuItem></SeparatorMenuItem>
+                        <MenuItem text="Center" onAction="#centerV"/>
+                        <MenuItem text="Reset" onAction="#resetV"/>
+                    </Menu>
+                </menus>
+            </MenuBar>
+            <HBox alignment="center" spacing="10">
+
+            </HBox>
+        </VBox>
+    </top>
+    <left></left>
+    <right>
+        <VBox>
+            <GridPane vgap="10" hgap="10" alignment="CENTER">
+                <Button text="Transform" onAction="#transform" GridPane.columnIndex="0"
+                        GridPane.columnSpan="2" GridPane.rowIndex="0"></Button>
+
+                <Label text="x:"
+                       GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <TextField fx:id="transformX" GridPane.columnIndex="1" GridPane.rowIndex="1"></TextField>
+
+                <Label text="y:"
+                       GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                <TextField fx:id="transformY" GridPane.columnIndex="1" GridPane.rowIndex="2"></TextField>
+
+
+                <Label text="phi:"
+                       GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                <TextField fx:id="transformPhi" GridPane.columnIndex="1" GridPane.rowIndex="3"></TextField>
+                <CheckBox fx:id="angleCheckbox" GridPane.columnIndex="2" GridPane.rowIndex="3"></CheckBox>
+            </GridPane>
+            <GridPane vgap="10" hgap="10" alignment="CENTER">
+                <Button text="Translation" onAction="#addTranslation" GridPane.rowIndex="0"></Button>
+                <Button text="Rotation" onAction="#addRotation" GridPane.rowIndex="1"></Button>
+                <Button text="Scaling" onAction="#addScaling" GridPane.rowIndex="2"></Button>
+                <Button text="Rotation on point" onAction="#addRotationOnPoint" GridPane.rowIndex="3"></Button>
+                <Button text="Horizontal flip" onAction="#addFlipX" GridPane.rowIndex="4"></Button>
+                <Button text="Vertical flip" onAction="#addFlipY" GridPane.rowIndex="5"></Button>
+                <Button text="Shearing X" onAction="#addShearingX" GridPane.rowIndex="6"></Button>
+
+            </GridPane>
+            <ListView fx:id="listView"></ListView>
+        </VBox>
+    </right>
+    <center>
+        <TabPane fx:id="tabPane">
+            <Tab fx:id="rasterTab" text="Raster image" closable="false">
+                <content>
+                    <ScrollPane fx:id="scrollPaneR" onMousePressed="#startPanningR" onMouseReleased="#stopPanningR">
+                        <content>
+                            <Group fx:id="groupR">
+                                <ImageView fx:id="imageViewR" preserveRatio="true"></ImageView>
+                                <ImageView fx:id="canvasR" pickOnBounds="true"></ImageView>
+                            </Group>
+                        </content>
+                    </ScrollPane>
+                </content>
+            </Tab>
+            <Tab fx:id="vectorTab" text="Vector image" closable="false">
+                <content>
+                    <ScrollPane fx:id="scrollPaneV" onMousePressed="#startPanningV" onMouseReleased="#stopPanningV">
+                        <content>
+                            <Group fx:id="groupV">
+                                <Pane fx:id="imageViewV"></Pane>
+                                <ImageView fx:id="canvasV" pickOnBounds="true"></ImageView>
+                            </Group>
+                        </content>
+                    </ScrollPane>
+                </content>
+            </Tab>
+        </TabPane>
+    </center>
+</BorderPane>
