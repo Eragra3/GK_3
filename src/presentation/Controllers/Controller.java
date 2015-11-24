@@ -243,8 +243,8 @@ public class Controller {
         double yCenter = bounds.getHeight() / 2;
 
         Bounds imageViewBounds = imageViewR.getBoundsInParent();
-        imageViewR.setTranslateX(xCenter - (imageViewBounds.getWidth() / 2) );
-        imageViewR.setTranslateY(yCenter - (imageViewBounds.getHeight() / 2));
+        imageViewR.setTranslateX(xCenter - (imageViewBounds.getWidth() / 2)  + rasterImage.getTranslateX());
+        imageViewR.setTranslateY(yCenter - (imageViewBounds.getHeight() / 2) + rasterImage.getTranslateY());
 
         Bounds canvasBounds = canvasR.getBoundsInParent();
         canvasR.setTranslateX(xCenter - (canvasBounds.getWidth() / 2));

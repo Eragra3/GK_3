@@ -3,7 +3,9 @@ package logic;
 import Common.MatrixHelper;
 import javafx.geometry.Point2D;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
 
 /**
  * Created by bider_000 on 15.11.2015.
@@ -19,6 +21,9 @@ public class RasterImageWrapper {
     }
 
     public void transform(double[][] transformationMatrix) {
+        //change translation
+//        transformationMatrix[1][2] = -transformationMatrix[1][2];
+
         final double originWidth = image.getWidth();
         final double originHeight = image.getHeight();
 
@@ -65,14 +70,14 @@ public class RasterImageWrapper {
             minW = p4.getX();
         //endregion
         //region offset image
-        translateX = p1.getX();
+        double translateX = p1.getX();
         if (p2.getX() < translateX)
             translateX = p2.getX();
         if (p3.getX() < translateX)
             translateX = p3.getX();
         if (p4.getX() < translateX)
             translateX = p4.getX();
-        translateY = p1.getY();
+        double translateY = p1.getY();
         if (p2.getY() < translateY)
             translateY = p2.getY();
         if (p3.getY() < translateY)
@@ -81,14 +86,13 @@ public class RasterImageWrapper {
             translateY = p4.getY();
         //endregion
 
-        int width = (int) Math.abs(maxW - minW);
-        int height = (int) Math.abs(maxH - minH);
+        int width = (int) Math.ceil(Math.abs(maxW - minW));
+        int height = (int) Math.ceil(Math.abs(maxH - minH));
 
         BufferedImage newImage = new BufferedImage(
                 width,
                 height,
                 BufferedImage.TYPE_INT_ARGB);
-
         //inverse matrix
         double[][] invTransfMatrix = MatrixHelper.invert(transformationMatrix);
         double[][] point = new double[3][1];
@@ -100,8 +104,8 @@ public class RasterImageWrapper {
 
         for (int i = 0; i < width - 1; i++) {
             for (int j = 0; j < height - 1; j++) {
-                point[0][0] = i;
-                point[1][0] = j;
+                point[0][0] = i + translateX;
+                point[1][0] = j + translateY;
                 point[2][0] = 1;
 
                 result = MatrixHelper.multiply(invTransfMatrix, point);
@@ -111,9 +115,7 @@ public class RasterImageWrapper {
                 x = result[0][0] / s;
                 y = result[1][0] / s;
 
-                x = x - translateX;
-                y = y - translateY;
-                if ((int) Math.ceil(y) > originHeight - 1 || Math.ceil(x) > originWidth - 1 || (int) y < 0 || (int) x < 0) {
+                if (Math.ceil(y) > originHeight - 1 || Math.ceil(x) > originWidth - 1 || (int) y < 0 || (int) x < 0) {
                     newImage.setRGB(i, j, 0xffff0000);
                     continue;
                 }
@@ -123,26 +125,37 @@ public class RasterImageWrapper {
                 bl = image.getRGB((int) x, (int) Math.ceil(y));
                 br = image.getRGB((int) Math.ceil(x), (int) Math.ceil(y));
                 alpha = x - (int) x;
-                cA = (int) ((1 - alpha) * ((tl & 0xff0000) >> 16) + alpha * ((tr & 0xff0000) >> 16)) << 16;
+                cA = (int) ((1 - alpha) * ((tl & 0xff000000) >> 24) + alpha * ((tr & 0xff000000) >> 24)) << 24;
+                cA += (int) ((1 - alpha) * ((tl & 0xff0000) >> 16) + alpha * ((tr & 0xff0000) >> 16)) << 16;
                 cA += (int) ((1 - alpha) * ((tl & 0x00ff00) >> 8) + alpha * ((tr & 0x00ff00) >> 8)) << 8;
                 cA += (int) ((1 - alpha) * (tl & 0x0000ff) + alpha * (tr & 0x0000ff));
 
-                cB = (int) ((1 - alpha) * ((bl & 0xff0000) >> 16) + alpha * ((br & 0xff0000) >> 16)) << 16;
+                cB = (int) ((1 - alpha) * ((bl & 0xff000000) >> 24) + alpha * ((br & 0xff000000) >> 24)) << 24;
+                cB += (int) ((1 - alpha) * ((bl & 0xff0000) >> 16) + alpha * ((br & 0xff0000) >> 16)) << 16;
                 cB += (int) ((1 - alpha) * ((bl & 0x00ff00) >> 8) + alpha * ((br & 0x00ff00) >> 8)) << 8;
                 cB += (int) ((1 - alpha) * (bl & 0x0000ff) + alpha * (br & 0x0000ff));
 
                 beta = y - (int) y;
-                cD = (int) ((1 - beta) * ((cA & 0xff0000) >> 16) + beta * ((cB & 0xff0000) >> 16)) << 16;
+                cD = (int) ((1 - beta) * ((cA & 0xff000000) >> 24) + beta * ((cB & 0xff000000) >> 24)) << 24;
+                cD += (int) ((1 - beta) * ((cA & 0xff0000) >> 16) + beta * ((cB & 0xff0000) >> 16)) << 16;
                 cD += (int) ((1 - beta) * ((cA & 0x00ff00) >> 8) + beta * ((cB & 0x00ff00) >> 8)) << 8;
                 cD += (int) ((1 - beta) * (cA & 0x0000ff) + beta * (cB & 0x0000ff));
 
-                cD += 0xff000000;
+//                cD += 0xff000000;
 
                 newImage.setRGB(i, j, cD);
             }
         }
+//        try {
+//            File outputfile = new File("preview.png");
+//            ImageIO.write(syntheticImage, "png", outputfile);
+//        }catch (Exception e) {
+//
+//        }
 
         image = newImage;
+        this.translateX += translateX;
+        this.translateY += translateY;
     }
 
 
