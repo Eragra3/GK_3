@@ -23,6 +23,7 @@ import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
 import logic.BackgroundDrawer;
 import logic.IBackgroundsDrawer;
+import logic.RasterImageWrapper;
 import logic.TransformationMatrixToolbox;
 import org.fxmisc.easybind.EasyBind;
 import org.fxmisc.easybind.monadic.MonadicBinding;
@@ -49,6 +50,8 @@ public class Controller {
     TabPane tabPane;
     SingleSelectionModel<Tab> tabPaneSelectionModel;
     //Raster
+    RasterImageWrapper rasterImage;
+
     @FXML
     ScrollPane scrollPaneR;
 
@@ -87,7 +90,7 @@ public class Controller {
     IBackgroundsDrawer bgDrawer = new BackgroundDrawer();
 
     VectorImage vectorImage;
-    ArrayList<javafx.scene.shape.Shape> vectorImagePreview;
+    ArrayList<javafx.scene.shape.Shape> vectorImagePreview = new ArrayList<>();
 
     @FXML
     ObservableList<Transformation> transformationsQueue = FXCollections.observableArrayList();
@@ -129,6 +132,7 @@ public class Controller {
         groupV.addEventFilter(ScrollEvent.SCROLL, this::handleScrollV);
         //
         tabPaneSelectionModel = tabPane.getSelectionModel();
+        rasterImage = new RasterImageWrapper();
     }
 
 
@@ -142,11 +146,12 @@ public class Controller {
                 BufferedImage bufferedImage = ImageIO.read(file);
                 Image image = SwingFXUtils.toFXImage(bufferedImage, null);
                 imageViewR.setImage(image);
+                rasterImage.setImage(bufferedImage);
 
                 BackgroundImage bg = bgDrawer.draw(scrollPaneR.getWidth(), scrollPaneR.getHeight());
                 canvasR.setImage(bg.getImage());
 
-                centerImageView(imageViewR);
+                centerImageView();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -200,6 +205,14 @@ public class Controller {
         }
     }
 
+    private void generatePreviewR() {
+        BufferedImage bufferedImage = rasterImage.getImage();
+        Image image = SwingFXUtils.toFXImage(bufferedImage, null);
+        imageViewR.setImage(image);
+        rasterImage.updateImage(bufferedImage);
+        centerImageView();
+    }
+
     public void startPanningR(MouseEvent mouseEvent) {
         if (mouseEvent.getButton() == MouseButton.MIDDLE) {
             scrollPaneR.setPannable(true);
@@ -224,15 +237,18 @@ public class Controller {
         }
     }
 
-    private void centerImageView(ImageView view) {
-        Bounds canvasBounds = canvasR.getBoundsInParent();
-        double xCenter = canvasBounds.getWidth() / 2;
-        double yCenter = canvasBounds.getHeight() / 2;
+    private void centerImageView() {
+        Bounds bounds = groupR.getBoundsInParent();
+        double xCenter = bounds.getWidth() / 2;
+        double yCenter = bounds.getHeight() / 2;
 
         Bounds imageViewBounds = imageViewR.getBoundsInParent();
+        imageViewR.setTranslateX(xCenter - (imageViewBounds.getWidth() / 2) );
+        imageViewR.setTranslateY(yCenter - (imageViewBounds.getHeight() / 2));
 
-        view.setTranslateX(xCenter - (imageViewBounds.getWidth() / 2));
-        view.setTranslateY(yCenter - (imageViewBounds.getHeight() / 2));
+        Bounds canvasBounds = canvasR.getBoundsInParent();
+        canvasR.setTranslateX(xCenter - (canvasBounds.getWidth() / 2));
+        canvasR.setTranslateY(yCenter - (canvasBounds.getHeight() / 2));
     }
 
     public void handleScrollR(ScrollEvent event) {
@@ -257,7 +273,7 @@ public class Controller {
 
             imageViewR.getTransforms().add(Transform.scale(scale, scale));
 
-            centerImageView(imageViewR);
+            centerImageView();
             //center viewport
             double centerX = scrollPaneR.getWidth() / 2;
             double centerY = scrollPaneR.getHeight() / 2;
@@ -306,22 +322,12 @@ public class Controller {
 
 
     @FXML
-    public void resetR() {
-
-    }
-
-    @FXML
     public void centerR() {
         if (imageViewR.getImage() != null) {
-            centerImageView(imageViewR);
+            centerImageView();
             scrollPaneR.setHvalue(0.5);
             scrollPaneR.setVvalue(0.5);
         }
-    }
-
-    @FXML
-    public void resetV() {
-
     }
 
     @FXML
@@ -344,8 +350,13 @@ public class Controller {
             M = operation.addSelf(M);
         }
 
-        vectorImage.transform(M);
-        generatePreviewV();
+        if (tabPaneSelectionModel.getSelectedIndex() == 0) {
+            rasterImage.transform(M);
+            generatePreviewR();
+        } else {
+            vectorImage.transform(M);
+            generatePreviewV();
+        }
     }
 
     @FXML

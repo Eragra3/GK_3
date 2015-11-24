@@ -14,11 +14,10 @@
                         </items>
                     </Menu>
                     <Menu text="Edit">
+                        <SeparatorMenuItem text="Raster"></SeparatorMenuItem>
                         <MenuItem text="Center" onAction="#centerR"/>
-                        <MenuItem text="Reset" onAction="#resetR"/>
-                        <SeparatorMenuItem></SeparatorMenuItem>
+                        <SeparatorMenuItem text="Vector"></SeparatorMenuItem>
                         <MenuItem text="Center" onAction="#centerV"/>
-                        <MenuItem text="Reset" onAction="#resetV"/>
                     </Menu>
                 </menus>
             </MenuBar>
