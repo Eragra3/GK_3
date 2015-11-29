@@ -16,6 +16,7 @@
                     <Menu text="Edit">
                         <SeparatorMenuItem text="Raster"></SeparatorMenuItem>
                         <MenuItem text="Center" onAction="#centerR"/>
+                        <MenuItem text="Reset" onAction="#resetR"/>
                         <SeparatorMenuItem text="Vector"></SeparatorMenuItem>
                         <MenuItem text="Center" onAction="#centerV"/>
                     </Menu>

@@ -1,6 +1,7 @@
 package presentation.Controllers;
 
 import Common.Helpers;
+import Common.MatrixHelper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
@@ -94,6 +95,7 @@ public class Controller {
 
     @FXML
     ObservableList<Transformation> transformationsQueue = FXCollections.observableArrayList();
+    double[][] transformationsHistory = TransformationMatrixToolbox.getEmpty();
 
     public void initialize() {
         //listView
@@ -243,8 +245,8 @@ public class Controller {
         double yCenter = bounds.getHeight() / 2;
 
         Bounds imageViewBounds = imageViewR.getBoundsInParent();
-        imageViewR.setTranslateX(xCenter - (imageViewBounds.getWidth() / 2)  + rasterImage.getTranslateX());
-        imageViewR.setTranslateY(yCenter - (imageViewBounds.getHeight() / 2) + rasterImage.getTranslateY());
+        imageViewR.setTranslateX(xCenter + rasterImage.getTranslateX());
+        imageViewR.setTranslateY(yCenter + rasterImage.getTranslateY());
 
         Bounds canvasBounds = canvasR.getBoundsInParent();
         canvasR.setTranslateX(xCenter - (canvasBounds.getWidth() / 2));
@@ -320,6 +322,15 @@ public class Controller {
         }
     }
 
+    @FXML
+    public void resetR() {
+        rasterImage.setTranslateX(0);
+        rasterImage.setTranslateY(0);
+        transformationsHistory = TransformationMatrixToolbox.getEmpty();
+        BufferedImage bufferedImage = rasterImage.getOriginalImage();
+        Image image = SwingFXUtils.toFXImage(bufferedImage, null);
+        imageViewR.setImage(image);
+    }
 
     @FXML
     public void centerR() {
@@ -346,14 +357,19 @@ public class Controller {
     public void transform() {
         double[][] M = TransformationMatrixToolbox.getEmpty();
 
-        for (Transformation operation : transformationsQueue) {
-            M = operation.addSelf(M);
-        }
 
         if (tabPaneSelectionModel.getSelectedIndex() == 0) {
+            M = MatrixHelper.multiply(M, transformationsHistory);
+            for (Transformation operation : transformationsQueue) {
+                M = operation.addSelf(M);
+            }
             rasterImage.transform(M);
             generatePreviewR();
+            transformationsHistory = M;
         } else {
+            for (Transformation operation : transformationsQueue) {
+                M = operation.addSelf(M);
+            }
             vectorImage.transform(M);
             generatePreviewV();
         }

@@ -13,6 +13,7 @@ import java.io.File;
 public class RasterImageWrapper {
 
     private BufferedImage image;
+    private BufferedImage modifiedImage;
     private double translateX;
     private double translateY;
 
@@ -116,7 +117,7 @@ public class RasterImageWrapper {
                 y = result[1][0] / s;
 
                 if (Math.ceil(y) > originHeight - 1 || Math.ceil(x) > originWidth - 1 || (int) y < 0 || (int) x < 0) {
-                    newImage.setRGB(i, j, 0xffff0000);
+//                    newImage.setRGB(i, j, 0xffff0000);
                     continue;
                 }
 
@@ -153,13 +154,17 @@ public class RasterImageWrapper {
 //
 //        }
 
-        image = newImage;
-        this.translateX += translateX;
-        this.translateY += translateY;
+        modifiedImage = newImage;
+        this.translateX = translateX;
+        this.translateY = translateY;
     }
 
 
     public BufferedImage getImage() {
+        return modifiedImage;
+    }
+
+    public BufferedImage getOriginalImage() {
         return image;
     }
 
@@ -169,8 +174,8 @@ public class RasterImageWrapper {
         this.translateY = 0;
     }
 
-    public void updateImage(BufferedImage image) {
-        this.image = image;
+    public void updateImage(BufferedImage modifiedImage) {
+        this.modifiedImage = modifiedImage;
     }
 
     public double getTranslateX() {
@@ -179,6 +184,14 @@ public class RasterImageWrapper {
 
     public double getTranslateY() {
         return translateY;
+    }
+
+    public void setTranslateX(double translateX) {
+        this.translateX = translateX;
+    }
+
+    public void setTranslateY(double translateY) {
+        this.translateY = translateY;
     }
 
     public Point2D multiply(double x, double y, double[][] transformationMatrix) {
