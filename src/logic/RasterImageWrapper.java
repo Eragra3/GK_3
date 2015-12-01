@@ -3,9 +3,7 @@ package logic;
 import Common.MatrixHelper;
 import javafx.geometry.Point2D;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 
 /**
  * Created by bider_000 on 15.11.2015.
@@ -16,6 +14,9 @@ public class RasterImageWrapper {
     private BufferedImage modifiedImage;
     private double translateX;
     private double translateY;
+
+    private double originTranslateX;
+    private double originTranslateY;
 
     public RasterImageWrapper() {
 
@@ -155,10 +156,34 @@ public class RasterImageWrapper {
 //        }
 
         modifiedImage = newImage;
+//        this.translateX = translateX;
+//        this.translateY = translateY;
+        calculateOriginsPoint(transformationMatrix, originWidth, originHeight);
+    }
+
+    private void calculateOriginsPoint(double[][] transformationMatrix, double originWidth, double originHeight) {
+        //calculate origins point
+        Point2D p1 = multiply(originTranslateX, originTranslateY, transformationMatrix);
+        Point2D p2 = multiply(originTranslateX, originHeight - 1 + originTranslateY, transformationMatrix);
+        Point2D p3 = multiply(originWidth - 1 + originTranslateX, originTranslateY, transformationMatrix);
+        Point2D p4 = multiply(originWidth - 1 + originTranslateX, originHeight - 1 + originTranslateY, transformationMatrix);
+        double translateX = p1.getX();
+        if (p2.getX() < translateX)
+            translateX = p2.getX();
+        if (p3.getX() < translateX)
+            translateX = p3.getX();
+        if (p4.getX() < translateX)
+            translateX = p4.getX();
+        double translateY = p1.getY();
+        if (p2.getY() < translateY)
+            translateY = p2.getY();
+        if (p3.getY() < translateY)
+            translateY = p3.getY();
+        if (p4.getY() < translateY)
+            translateY = p4.getY();
         this.translateX = translateX;
         this.translateY = translateY;
     }
-
 
     public BufferedImage getImage() {
         return modifiedImage;
@@ -192,6 +217,22 @@ public class RasterImageWrapper {
 
     public void setTranslateY(double translateY) {
         this.translateY = translateY;
+    }
+
+    public double getOriginTranslateX() {
+        return originTranslateX;
+    }
+
+    public void setOriginTranslateX(double originTranslateX) {
+        this.originTranslateX = originTranslateX;
+    }
+
+    public double getOriginTranslateY() {
+        return originTranslateY;
+    }
+
+    public void setOriginTranslateY(double originTranslateY) {
+        this.originTranslateY = originTranslateY;
     }
 
     public Point2D multiply(double x, double y, double[][] transformationMatrix) {

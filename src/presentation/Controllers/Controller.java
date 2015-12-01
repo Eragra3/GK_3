@@ -153,7 +153,14 @@ public class Controller {
                 BackgroundImage bg = bgDrawer.draw(scrollPaneR.getWidth(), scrollPaneR.getHeight());
                 canvasR.setImage(bg.getImage());
 
+                //center our transformations
+                Bounds imageViewBounds = imageViewR.getBoundsInParent();
+                rasterImage.setOriginTranslateX(-(imageViewBounds.getWidth() / 2));
+                rasterImage.setOriginTranslateY(-(imageViewBounds.getHeight() / 2));
+
                 centerImageView();
+
+                transformationsHistory = TransformationMatrixToolbox.getEmpty();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -245,8 +252,8 @@ public class Controller {
         double yCenter = bounds.getHeight() / 2;
 
         Bounds imageViewBounds = imageViewR.getBoundsInParent();
-        imageViewR.setTranslateX(xCenter + rasterImage.getTranslateX());
-        imageViewR.setTranslateY(yCenter + rasterImage.getTranslateY());
+        imageViewR.setTranslateX(xCenter + rasterImage.getTranslateX() + rasterImage.getOriginTranslateX());
+        imageViewR.setTranslateY(yCenter + rasterImage.getTranslateY() + rasterImage.getOriginTranslateY());
 
         Bounds canvasBounds = canvasR.getBoundsInParent();
         canvasR.setTranslateX(xCenter - (canvasBounds.getWidth() / 2));
