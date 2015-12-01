@@ -170,6 +170,16 @@ public class Controller {
     }
 
     @FXML
+    public void saveImageR() {
+        File file = new File("result.png");
+
+        try {
+            ImageIO.write(rasterImage.getImage(), "png", file);
+        } catch (Exception s) {
+        }
+    }
+
+    @FXML
     public void loadImageV() {
         vectorImage = new VectorImage();
         Shape.xTransl = imageViewV.getWidth();
@@ -184,7 +194,7 @@ public class Controller {
         polygon.addPoint(2, 1);
         vectorImage.addShape(polygon);
 
-        Line l = new Line(-10, -19, 10, 21);
+        Line l = new Line(-10, -22, 10, 18);
         vectorImage.addShape(l);
 
         Point p = new Point(0, 0);
@@ -333,12 +343,13 @@ public class Controller {
 
     @FXML
     public void resetR() {
-        rasterImage.setTranslateX(0);
-        rasterImage.setTranslateY(0);
+        rasterImage.setTranslateX(rasterImage.getOriginTranslateX());
+        rasterImage.setTranslateY(rasterImage.getOriginTranslateY());
         transformationsHistory = TransformationMatrixToolbox.getEmpty();
         BufferedImage bufferedImage = rasterImage.getOriginalImage();
         Image image = SwingFXUtils.toFXImage(bufferedImage, null);
         imageViewR.setImage(image);
+        centerImageView();
     }
 
     @FXML
@@ -456,6 +467,18 @@ public class Controller {
             double x = parseDouble(transformX.getText());
 
             transformationsQueue.add(new ShearingX(x));
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Parameters are invalid", ButtonType.OK);
+            alert.show();
+        }
+    }
+
+    @FXML
+    public void addShearingY() {
+        try {
+            double y = parseDouble(transformY.getText());
+
+            transformationsQueue.add(new ShearingY(y));
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Parameters are invalid", ButtonType.OK);
             alert.show();

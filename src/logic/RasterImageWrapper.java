@@ -142,7 +142,10 @@ public class RasterImageWrapper {
                 cD += (int) ((1 - beta) * ((cA & 0xff0000) >> 16) + beta * ((cB & 0xff0000) >> 16)) << 16;
                 cD += (int) ((1 - beta) * ((cA & 0x00ff00) >> 8) + beta * ((cB & 0x00ff00) >> 8)) << 8;
                 cD += (int) ((1 - beta) * (cA & 0x0000ff) + beta * (cB & 0x0000ff));
-
+//                if ((int) Math.round(x) < 0 || (int) Math.round(y) < 0 || (int) Math.round(x) > originWidth - 1 ||
+//                        (int) Math.round(y) > originHeight - 1)
+//                    continue;
+//                cD = image.getRGB((int) Math.round(x), (int) Math.round(y));
 //                cD += 0xff000000;
 
                 newImage.setRGB(i, j, cD);
