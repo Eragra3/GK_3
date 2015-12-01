@@ -155,8 +155,8 @@ public class Controller {
 
                 //center our transformations
                 Bounds imageViewBounds = imageViewR.getBoundsInParent();
-                rasterImage.setOriginTranslateX(-(imageViewBounds.getWidth() / 2));
-                rasterImage.setOriginTranslateY(-(imageViewBounds.getHeight() / 2));
+                rasterImage.setTranslateX(-(imageViewBounds.getWidth() / 2));
+                rasterImage.setTranslateY(-(imageViewBounds.getHeight() / 2));
 
                 centerImageView();
 
@@ -252,8 +252,8 @@ public class Controller {
         double yCenter = bounds.getHeight() / 2;
 
         Bounds imageViewBounds = imageViewR.getBoundsInParent();
-        imageViewR.setTranslateX(xCenter + rasterImage.getTranslateX() + rasterImage.getOriginTranslateX());
-        imageViewR.setTranslateY(yCenter + rasterImage.getTranslateY() + rasterImage.getOriginTranslateY());
+        imageViewR.setTranslateX(xCenter + rasterImage.getTranslateX());
+        imageViewR.setTranslateY(yCenter + rasterImage.getTranslateY());
 
         Bounds canvasBounds = canvasR.getBoundsInParent();
         canvasR.setTranslateX(xCenter - (canvasBounds.getWidth() / 2));
