@@ -155,6 +155,8 @@ public class Controller {
 
                 //center our transformations
                 Bounds imageViewBounds = imageViewR.getBoundsInParent();
+                rasterImage.setOriginTranslateX(-(imageViewBounds.getWidth() / 2));
+                rasterImage.setOriginTranslateY(-(imageViewBounds.getHeight() / 2));
                 rasterImage.setTranslateX(-(imageViewBounds.getWidth() / 2));
                 rasterImage.setTranslateY(-(imageViewBounds.getHeight() / 2));
 
